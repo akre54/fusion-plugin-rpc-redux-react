@@ -115,7 +115,11 @@ test('browser plugin integration test withRPCRedux and options', async t => {
     const body: string = options.body;
 
     t.equal(url, '/api/test', 'fetches to expected url');
-    t.deepLooseEqual(JSON.parse(body), {arg: 1, state: 2, prop: 3}, 'sends correct body');
+    t.deepLooseEqual(
+      JSON.parse(body),
+      {arg: 1, state: 2, prop: 3},
+      'sends correct body'
+    );
     t.equal(options.method, 'POST', 'makes POST request');
     return Promise.resolve(
       new Response(
@@ -134,17 +138,20 @@ test('browser plugin integration test withRPCRedux and options', async t => {
     {type: /TEST_START/, payload: {arg: 1, state: 2, prop: 3}},
     {type: /TEST_SUCCESS/, payload: {a: 'b'}},
   ];
-  const store = createStore((state, action) => {
-    const fixture = expectedActions.shift();
-    t.ok(fixture.type.test(action.type), 'dispatches expected action type');
-    t.deepLooseEqual(
-      action.payload,
-      // $FlowFixMe
-      fixture.payload,
-      'dispatches expected action payload'
-    );
-    return {...state, ...action.payload};
-  }, {state: 2});
+  const store = createStore(
+    (state, action) => {
+      const fixture = expectedActions.shift();
+      t.ok(fixture.type.test(action.type), 'dispatches expected action type');
+      t.deepLooseEqual(
+        action.payload,
+        // $FlowFixMe
+        fixture.payload,
+        'dispatches expected action payload'
+      );
+      return {...state, ...action.payload};
+    },
+    {state: 2}
+  );
 
   const Component = props => {
     t.equal(typeof props.test, 'function', 'passes correct prop to component');
@@ -158,9 +165,7 @@ test('browser plugin integration test withRPCRedux and options', async t => {
   const withTest = compose(
     withRPCRedux('test', {mapStateToParams}),
     connect(s => s),
-    prepared(props =>
-      props.a ? Promise.resolve() : props.test({arg: 1})
-    )
+    prepared(props => (props.a ? Promise.resolve() : props.test({arg: 1})))
   )(Component);
 
   const element = React.createElement(
