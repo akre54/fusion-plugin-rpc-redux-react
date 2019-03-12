@@ -36,7 +36,7 @@ export function withRPCReactor<Props: {}>(
     transformParams,
     mapStateToParams,
   });
-};
+}
 
 export function withRPCRedux<Props: {}>(
   rpcId: string,
